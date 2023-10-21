@@ -7,12 +7,12 @@ import openai
 import os
 
 SAMPLE_PROMPT = """
-Write a pull request description focusing on the motivation behind the change and why it improves the project.
-Go straight to the point.
+Schrijf een beschrijving van een pull-aanvraag waarin de motivatie achter de verandering centraal staat en waarom deze het project verbetert.
+Ga meteen ter zake.
 
-The title of the pull request is "Enable valgrind on CI" and the following changes took place: 
+De titel van het pull-verzoek is "Enable valgrind on CI" en de volgende wijzigingen hebben plaatsgevonden:
 
-Changes in file .github/workflows/build-ut-coverage.yml: @@ -24,6 +24,7 @@ jobs:
+Veranderingen in bestand: .github/workflows/build-ut-coverage.yml: @@ -24,6 +24,7 @@ jobs:
          run: |
            sudo apt-get update
            sudo apt-get install -y lcov
@@ -28,7 +28,7 @@ Changes in file .github/workflows/build-ut-coverage.yml: @@ -24,6 +24,7 @@ jobs:
 +        run: |
 +          valgrind --tool=memcheck --leak-check=full --leak-resolution=med \
 +            --track-origins=yes --vgdb=no --error-exitcode=1 ${build_dir}/test/command_parser_test
-Changes in file test/CommandParserTest.cpp: @@ -566,7 +566,7 @@ TEST(CommandParserTest, ParsedCommandImpl_WhenArgumentIsSupportedNumericTypeWill
+Veranderingen in bestand: test/CommandParserTest.cpp: @@ -566,7 +566,7 @@ TEST(CommandParserTest, ParsedCommandImpl_WhenArgumentIsSupportedNumericTypeWill
      unsigned long long expectedUnsignedLongLong { std::numeric_limits<unsigned long long>::max() };
      float expectedFloat { -164223.123f }; // std::to_string does not play well with floating point min()
      double expectedDouble { std::numeric_limits<double>::max() };
@@ -40,10 +40,11 @@ Changes in file test/CommandParserTest.cpp: @@ -566,7 +566,7 @@ TEST(CommandPars
 """
 
 GOOD_SAMPLE_RESPONSE = """
-Currently, our CI build does not include Valgrind as part of the build and test process. Valgrind is a powerful tool for detecting memory errors, and its use is essential for maintaining the integrity of our project.
-This pull request adds Valgrind to the CI build, so that any memory errors will be detected and reported immediately. This will help to prevent undetected memory errors from making it into the production build.
+Op dit moment is Valgrind niet opgenomen in ons CI-buildproces, en dat is best wel jammer! 😔 Valgrind is echt een geweldige tool om geheugenfouten op te sporen, en het gebruik ervan is van groot belang voor het behoud van de integriteit van ons project. 🛠️
 
-Overall, this change will improve the quality of the project by helping us detect and prevent memory errors.
+Maar geen zorgen! Deze pull-aanvraag voegt Valgrind toe aan het CI-buildproces, zodat eventuele geheugenfouten direct worden opgespoord en gerapporteerd. 🕵️‍♂️ Dit zal ons enorm helpen om te voorkomen dat onopgemerkte geheugenfouten hun weg vinden naar de productieversie van ons project. 💼
+
+Kortom, deze verandering zal de kwaliteit van ons project aanzienlijk verbeteren door ons te helpen geheugenfouten te detecteren en te voorkomen. 🌟🚀
 """
 
 
@@ -154,10 +155,10 @@ def main():
         pull_request_files.extend(pull_files_chunk)
 
         completion_prompt = f"""
-Write a pull request description focusing on the motivation behind the change and why it improves the project.
-Go straight to the point.
+Schrijf een beschrijving van een pull-request waarin de motivatie achter de verandering centraal staat en waarom deze het project verbetert.
+Ga meteen ter zake.
 
-The title of the pull request is "{pull_request_title}" and the following changes took place: \n
+De titel van het pull-request is "{pull_request_title}" en de volgende veranderingen vonden plaats: \n
 """
     for pull_request_file in pull_request_files:
         # Not all PR file metadata entries may contain a patch section
@@ -167,7 +168,7 @@ The title of the pull request is "{pull_request_title}" and the following change
 
         filename = pull_request_file["filename"]
         patch = pull_request_file["patch"]
-        completion_prompt += f"Changes in file {filename}: {patch}\n"
+        completion_prompt += f"Veranderingen in bestand: {filename}: {patch}\n"
 
     max_allowed_tokens = 2048  # 4096 is the maximum allowed by OpenAI for GPT-3.5
     characters_per_token = 4  # The average number of characters per token
@@ -181,7 +182,7 @@ The title of the pull request is "{pull_request_title}" and the following change
         messages=[
             {
                 "role": "system",
-                "content": "You are a helpful assistant who writes pull request descriptions",
+                "content": "Je bent een behulpzame assistent die beschrijvingen van pull-requests schrijft in het Nederlands, op een gezellige manier en je communiceert graag met veel emoji's.",
             },
             {"role": "user", "content": model_sample_prompt},
             {"role": "assistant", "content": model_sample_response},
@@ -192,7 +193,7 @@ The title of the pull request is "{pull_request_title}" and the following change
     )
 
     generated_pr_description = openai_response.choices[0].message.content
-    redundant_prefix = "This pull request "
+    redundant_prefix = "Deze pull-request "
     if generated_pr_description.startswith(redundant_prefix):
         generated_pr_description = generated_pr_description[len(redundant_prefix) :]
         generated_pr_description = (
